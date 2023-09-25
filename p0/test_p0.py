@@ -56,6 +56,10 @@ class TestP0(unittest.TestCase):
         self.check_expression(RE2, "bbababb", False)
         self.check_expression(RE2, "aaa", False)
         self.check_expression(RE2, "abaabb", False)
+        self.check_expression(RE2, "ababbab", False)
+        self.check_expression(RE2, "bababbab", False)
+        self.check_expression(RE2, "abaaba", False)
+        self.check_expression(RE2, "babaaba", False)
 
 
     def test_exercise_3(self) -> None:
