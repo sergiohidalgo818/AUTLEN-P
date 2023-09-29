@@ -4,6 +4,7 @@ a modo de ejemplo:
 """
 RE0 = "[ab]*a"
 
+# Sergio Hidalgo y Alexis Canales 
 """
 Completa a continuacion las expresiones regulares para los
 ejercicios 1-6:
