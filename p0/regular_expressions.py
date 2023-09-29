@@ -9,11 +9,10 @@ Completa a continuacion las expresiones regulares para los
 ejercicios 1-6:
 """
 RE1 = "a*b*"
-
 RE2 = "a|b|(ab)*a?|(ba)*b?"
-RE3 = "(a*|b*)*(((aa(a*|b*)*)+)|((bb(a*|b*)*)+))*"    
-RE4 = ("")
-RE5 = ""
+RE3 = "([ab]*bb[ab]*aa[ab]*)|([ab]*aa[ab]*bb[ab]*)"
+RE4 = "(([0-2][0-5]?[0-5]?)|(1?[1-9]?[0-9]?)|[0-9])"
+RE5 = "((ab)|b)*(aa)?((ab)|b)*(aa)?((ab)|b)*a?"
 RE6 = ""
 
 """
