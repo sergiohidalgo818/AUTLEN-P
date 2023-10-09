@@ -66,6 +66,8 @@ class FiniteAutomatonEvaluator():
 
             if new == prev:
                 break
+
+        return set_to_complete
         
             
 

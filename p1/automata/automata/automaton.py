@@ -139,16 +139,17 @@ class Transitions(dict):
                 set of states
         """
 
-        transitions = set()
+        transition_set = set()
 
-        if not self.has_transition(state, symbol): return transitions
+        if not self.has_transition(state, symbol): return transition_set
+        
 
         for start_state in self:
             if start_state is state: 
-                for symb in start_state:
-                    if symb is symbol: transitions.add(start_state[symb])
+                for symb in self[start_state]:#!
+                    if symb is symbol: transition_set.add(self[start_state[symb]])
 
-        return transitions
+        return transition_set
 
     
     def get_all_transitions(self):
