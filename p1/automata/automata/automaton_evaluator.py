@@ -38,28 +38,37 @@ class FiniteAutomatonEvaluator():
         Args:
             symbol: Symbol to consume. Type: str
 
-        """
-        #---------------------------------------------------------------------
-        
-        # TO DO: Implement this method...
+        """ 
 
-        raise NotImplementedError("This method must be implemented.")       
-        #---------------------------------------------------------------------
+        for i in self.current_states:
+            transitions = self.automaton.get_transition(self, i, symbol)
+            self._complete_lambdas(transitions)
 
-        
-    def _complete_lambdas(self, set_to_complete):
+    def _complete_lambdas(self, set_to_complete: set):
         """
         Add states reachable with lambda transitions to the set.
 
         Args:
             set_to_complete: Current set of states to be completed.
         """
-        #---------------------------------------------------------------------
-        
-        # TO DO: Implement this method...
 
-        raise NotImplementedError("This method must be implemented.")       
-        #---------------------------------------------------------------------
+        new = 0
+        while 1:
+            prev = len(set_to_complete)
+            auxset = set_to_complete.copy()
+            
+            for i in set_to_complete:
+                auxset.add(self.automaton.get_transition(i, None))
+            
+            new = len(auxset)
+
+            set_to_complete = auxset.copy()
+
+            if new == prev:
+                break
+        
+            
+
 
         
     def process_string(self, string):
@@ -76,12 +85,13 @@ class FiniteAutomatonEvaluator():
 
     def is_accepting(self):
         """Check if the current state is an accepting one."""
-        #---------------------------------------------------------------------
-        
-        # TO DO: Implement this method...
 
-        raise NotImplementedError("This method must be implemented.")       
-        #---------------------------------------------------------------------
+        for state in self.current_states:
+            state_info = repr(state) 
+            if "True" in state_info: return True
+
+        return False
+           
         
 
     def accepts(self, string):

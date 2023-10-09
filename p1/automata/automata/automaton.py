@@ -50,11 +50,10 @@ class Transitions(dict):
         super().__init__(*args, **kwargs)
 
 
-    def __eq__(self, other):
-        if not isinstance(other, type(self)):
-            return NotImplemented
-
-        return self.transitions == other.transitions
+    # def __eq__(self, other):
+    #     if not isinstance(other, type(self)):
+    #         return NotImplemented
+    #    return self.transitions == other.transitions
 
     def __repr__(self):
         return (
@@ -104,11 +103,11 @@ class Transitions(dict):
             Checks if a transition defined by a start_state and a symbol is
             contained in Transitions.
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
+        if start_state in self and symbol in self[start_state]:
+            return True
+        else:
+            return False
 
-        raise NotImplementedError("This method must be implemented.")       
-        #---------------------------------------------------------------------
         
     def has_transition_to(self, start_state, symbol, end_state):
         """
@@ -122,12 +121,11 @@ class Transitions(dict):
             Returns:
                 True/False
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
 
-        raise NotImplementedError("This method must be implemented.")
-        #---------------------------------------------------------------------
-
+        if start_state in self and symbol in self[start_state] and end_state in self[start_state[symbol]]:
+            return True
+        else:
+            return False
 
     def get_transition(self, state, symbol):
         """
@@ -140,11 +138,18 @@ class Transitions(dict):
             Returns:
                 set of states
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
 
-        raise NotImplementedError("This method must be implemented.")
-        #---------------------------------------------------------------------
+        transitions = set()
+
+        if not self.has_transition(state, symbol): return transitions
+
+        for start_state in self:
+            if start_state is state: 
+                for symb in start_state:
+                    if symb is symbol: transitions.add(start_state[symb])
+
+        return transitions
+
     
     def get_all_transitions(self):
         """
