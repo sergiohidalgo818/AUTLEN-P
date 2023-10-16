@@ -55,10 +55,17 @@ class REParser():
             Automaton that accepts the empty language. Type: FiniteAutomaton
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")        
-        #---------------------------------------------------------------------
+
+        q0 = State("q0", False)
+        q1 = State("q1", True)
+        states = set()
+        states.add(q0)
+        states.add(q1)
+        trans = Transitions({element: dict() for element in states})
+
+
+        aut = FiniteAutomaton(q0, states, None, trans)
+
         
 
     def _create_automaton_lambda(self):
@@ -69,10 +76,17 @@ class REParser():
             Automaton that accepts the empty string. Type: FiniteAutomaton
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")        
-        #---------------------------------------------------------------------
+
+        q0 = State("q0", True)
+        states = set()
+        states.add(q0)
+        trans = Transitions({element: dict({None: set()}) for element in states})
+        
+
+        aut = FiniteAutomaton(q0, states, None, trans)
+
+        return aut
+
 
 
     def _create_automaton_symbol(self, symbol):
@@ -86,10 +100,17 @@ class REParser():
             Automaton that accepts a symbol. Type: FiniteAutomaton
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")        
-        #---------------------------------------------------------------------
+        q0 = State("q0", False)
+        q1 = State("q1", True)
+        states = set()
+        states.add(q0)
+        states.add(q1)
+        trans = Transitions({element: dict({None: set()}) for element in states})
+
+        trans.add_transition(q0, symbol, q1)
+        aut = FiniteAutomaton(q0, states, symbol, trans)
+        
+        return aut
 
 
     def _create_automaton_star(self, automaton):
