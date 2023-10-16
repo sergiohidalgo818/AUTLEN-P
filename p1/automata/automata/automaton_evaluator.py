@@ -40,9 +40,11 @@ class FiniteAutomatonEvaluator():
 
         """ 
 
+        transitions = set()
         for i in self.current_states:
-            transitions = self.automaton.get_transition(self, i, symbol)
-            self._complete_lambdas(transitions)
+            transitions.update(self.automaton.get_transition(i, symbol))
+        
+        self.current_states = self._complete_lambdas(transitions)
 
     def _complete_lambdas(self, set_to_complete: set):
         """
@@ -58,7 +60,7 @@ class FiniteAutomatonEvaluator():
             auxset = set_to_complete.copy()
             
             for i in set_to_complete:
-                auxset.add(self.automaton.get_transition(i, None))
+                auxset.update(self.automaton.get_transition(i, None))
             
             new = len(auxset)
 
@@ -89,10 +91,11 @@ class FiniteAutomatonEvaluator():
         """Check if the current state is an accepting one."""
 
         for state in self.current_states:
-            state_info = repr(state) 
-            if "True" in state_info: return True
-
+            state_info = repr(state)
+            if 'True' in state_info: return True
+        
         return False
+
            
         
 

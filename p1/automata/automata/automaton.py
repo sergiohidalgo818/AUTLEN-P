@@ -103,6 +103,7 @@ class Transitions(dict):
             Checks if a transition defined by a start_state and a symbol is
             contained in Transitions.
         """
+        
         if start_state in self and symbol in self[start_state]:
             return True
         else:
@@ -122,7 +123,7 @@ class Transitions(dict):
                 True/False
         """
 
-        if start_state in self and symbol in self[start_state] and end_state in self[start_state[symbol]]:
+        if start_state in self and symbol in self[start_state] and end_state in self[start_state][symbol]:
             return True
         else:
             return False
@@ -141,13 +142,14 @@ class Transitions(dict):
 
         transition_set = set()
 
+
         if not self.has_transition(state, symbol): return transition_set
         
 
         for start_state in self:
             if start_state is state: 
-                for symb in self[start_state]:#!
-                    if symb is symbol: transition_set.add(self[start_state[symb]])
+                for symb in self[start_state]:
+                    if symb is symbol: return self[start_state][symb]
 
         return transition_set
 
