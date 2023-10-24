@@ -78,7 +78,6 @@ class TestREParser(unittest.TestCase):
         self._check_accept(evaluator, "bab", should_accept=False)
 
     def test_or(self):
-        return
         """Test Kleene star."""
         evaluator = self._create_evaluator("(a+b)*")
 

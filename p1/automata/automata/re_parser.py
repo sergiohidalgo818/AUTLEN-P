@@ -129,7 +129,7 @@ class REParser():
 
         states = set()
         new_andold = dict()
-        symbols = list()
+        symbols = set()
         transitions_getted=automaton.get_all_transitions()
         cont = 0
 
@@ -174,7 +174,7 @@ class REParser():
                     s1 = new_andold[i]  
                 if cont == 2:
                     symbol = i
-                    symbols.append(str(i))  
+                    symbols.add(str(i))  
                 if cont == 3:
                     s2 = new_andold[i]  
                     trans.add_transition(s1, symbol, s2)
@@ -200,7 +200,7 @@ class REParser():
         """
 
         states = set()
-        symbols = list()
+        symbols = set()
         new_andold = dict()
         finals = list()
         initials = list()
@@ -264,13 +264,10 @@ class REParser():
                         s1 = new_andold[automaton_n][i]  
                     if cont == 2:
                         symbol = i
-                        symbols.append(str(i))  
+                        symbols.add(str(i))  
                     if cont == 3:
                         s2 = new_andold[automaton_n][i]  
                         trans.add_transition(s1, symbol, s2)
-                        print(" ")
-                        print("b   - > ", each)
-                        print(" " , s1, " ",  symbol, " ", s2)
                         cont= 0 
         aut = FiniteAutomaton(q0, states, symbols, trans)
         return aut
