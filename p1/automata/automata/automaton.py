@@ -104,7 +104,7 @@ class Transitions(dict):
             contained in Transitions.
         """
         
-        if start_state in self and symbol in self[start_state]:
+        if start_state in self.keys() and symbol in self[start_state]:
             return True
         else:
             return False
@@ -123,7 +123,7 @@ class Transitions(dict):
                 True/False
         """
 
-        if start_state in self and symbol in self[start_state] and end_state in self[start_state][symbol]:
+        if start_state in self.keys() and symbol in self[start_state] and end_state in self[start_state][symbol]:
             return True
         else:
             return False
@@ -147,7 +147,7 @@ class Transitions(dict):
         
 
         for start_state in self:
-            if start_state is state: 
+            if repr(start_state) == repr(state): 
                 for symb in self[start_state]:
                     if symb is symbol: return self[start_state][symb]
 

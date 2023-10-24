@@ -66,6 +66,8 @@ class REParser():
 
         aut = FiniteAutomaton(q0, states, None, trans)
 
+        return aut
+
         
 
     def _create_automaton_lambda(self):
@@ -124,10 +126,64 @@ class REParser():
             Automaton that accepts the Kleene star. Type: FiniteAutomaton
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")  
-        #---------------------------------------------------------------------
+
+        states = set()
+        new_andold = dict()
+        symbols = list()
+        transitions_getted=automaton.get_all_transitions()
+        cont = 0
+
+
+        q0 = State("q"+str(self.state_counter), False)
+        self.state_counter+=1
+        states.add(q0)
+
+        initial = automaton.initial_state
+
+        for i in automaton.states:
+
+            if i.is_final == True:
+                i.is_final = False
+                final = State("q"+str(self.state_counter))
+                states.add(final)
+                new_andold[i] = final
+            else:
+                new_andold[i] = State( "q" + str(self.state_counter))
+                states.add(new_andold[i])
+
+                if i.name == initial.name:
+                    initial = new_andold[i]
+
+            self.state_counter+=1
+  
+        qf = State("q"+str(self.state_counter), True)
+        self.state_counter+=1
+        states.add(qf)
+
+        trans = Transitions({element: dict() for element in states})
+        
+        trans.add_transition(q0, None, initial)
+        trans.add_transition(q0, None, qf)
+        trans.add_transition(final, None, initial)
+        trans.add_transition(final, None, qf)
+
+        for each in transitions_getted:
+            for i in each:
+                cont+=1
+                if cont == 1:
+                    s1 = new_andold[i]  
+                if cont == 2:
+                    symbol = i
+                    symbols.append(str(i))  
+                if cont == 3:
+                    s2 = new_andold[i]  
+                    trans.add_transition(s1, symbol, s2)
+                    cont= 0 
+                
+
+        aut = FiniteAutomaton(q0, states, symbols, trans)
+
+        return aut
 
 
     def _create_automaton_union(self, automaton1, automaton2):
@@ -142,12 +198,83 @@ class REParser():
             Automaton that accepts the union. Type: FiniteAutomaton.
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")  
-        #---------------------------------------------------------------------
+
+        states = set()
+        symbols = list()
+        new_andold = dict()
+        finals = list()
+        initials = list()
+        q0 = State("q"+str(self.state_counter), False)
+        self.state_counter+=1
+        states.add(q0)
 
 
+        automatons = [automaton1, automaton2]
+
+        for automaton_n in range(len(automatons)):
+
+            automaton = automatons[automaton_n]
+
+            initial = automaton.initial_state
+
+
+            new_andold[automaton_n] = dict()
+
+            for i in automaton.states:
+
+                if i.is_final == True:
+                        i.is_final = False
+                        final = State("q"+str(self.state_counter))
+                        states.add(final)
+                        new_andold[automaton_n][i] = final
+                        finals.append(final)
+                else:
+                        new_andold[automaton_n][i] = State( "q" + str(self.state_counter))
+                        states.add(new_andold[automaton_n][i])
+
+                        if i.name == initial.name:
+                            initial = new_andold[automaton_n][i]
+                            initials.append(initial)
+
+                self.state_counter+=1
+
+    
+            
+        f0 =  State("f"+str(self.state_counter), True)
+        self.state_counter+=1
+        states.add(f0)
+
+            
+        trans = Transitions({element: dict() for element in states})
+        
+        
+        trans.add_transition(q0, None, initials[0])
+        trans.add_transition(q0, None, initials[1])
+        trans.add_transition(finals[0], None, f0)
+        trans.add_transition(finals[1], None, f0)
+
+        for automaton_n in range(len(automatons)):
+            automaton = automatons[automaton_n]
+            transitions_getted=automaton.get_all_transitions()
+            cont=0
+            for each in transitions_getted:
+                for i in each:
+                    cont+=1
+                    if cont == 1:
+                        s1 = new_andold[automaton_n][i]  
+                    if cont == 2:
+                        symbol = i
+                        symbols.append(str(i))  
+                    if cont == 3:
+                        s2 = new_andold[automaton_n][i]  
+                        trans.add_transition(s1, symbol, s2)
+                        print(" ")
+                        print("b   - > ", each)
+                        print(" " , s1, " ",  symbol, " ", s2)
+                        cont= 0 
+        aut = FiniteAutomaton(q0, states, symbols, trans)
+        return aut
+    
     def _create_automaton_concat(self, automaton1, automaton2):
         """
         Create an automaton that accepts the concatenation of two automata.
@@ -160,11 +287,27 @@ class REParser():
             Automaton that accepts the concatenation. Type: FiniteAutomaton.
 
         """
-        #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        raise NotImplementedError("This method must be implemented.")        
-        #---------------------------------------------------------------------
+        
+        q0 = State("q0", False)
+        q1 = State("q1", False)
+        q2 = State("q2", False)
+        q3 = State("q3", True)
+        states = set()
+        states.add(q0)
+        states.add(q1)
+        states.add(q2)
+        states.add(q3)
+        
+        trans = Transitions({element: dict() for element in states})
+        
+        trans.add_transition(q0, automaton1, q1)
+        trans.add_transition(q1, None, q2)
+        trans.add_transition(q2, automaton2, q3)
 
+
+        aut = FiniteAutomaton(q0, states, list(automaton1, automaton2, None), trans)
+
+        return aut
 
     def create_automaton(
         self,
