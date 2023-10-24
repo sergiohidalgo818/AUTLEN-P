@@ -18,7 +18,6 @@ class TestREParser(unittest.TestCase):
             self.assertEqual(accepted, should_accept)
 
     def test_fixed(self):
-        return
         """Test fixed regex."""
         evaluator = self._create_evaluator("H.e.l.l.o")
 
@@ -61,7 +60,6 @@ class TestREParser(unittest.TestCase):
     
 
     def test_star(self):
-        return
         """Test Kleene star."""
         evaluator = self._create_evaluator("a*.b*")
 
@@ -94,7 +92,6 @@ class TestREParser(unittest.TestCase):
         self._check_accept(evaluator, "bab", should_accept=True)
 
     def test_number(self):
-        return
         """Test number expression."""
         num = "(0+1+2+3+4+5+6+7+8+9)"
         evaluator = self._create_evaluator(
