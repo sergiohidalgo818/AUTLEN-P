@@ -42,42 +42,63 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         from automata.automaton_evaluator import FiniteAutomatonEvaluator
         evaluator = FiniteAutomatonEvaluator(finiteAutomaton)
 
+        # creates the new initial state
         initial = create_state(evaluator.current_states)
+        # and the table of future transitions
         table = dict()
 
+        # queue to check all the new states
         q = queue.Queue()
         q.put(evaluator.current_states)
+        # set of new states
         newstates = set()
-        newstates.add(create_state(evaluator.current_states))
+        newstates.add(initial)
 
+        # empty state
         empty_state = State("empty", False)
 
+        # while is not empty
         while not q.empty():
+            # it will extract the next state on queue
             state = q.get()
 
+            # then create a new state from that one
             newstate = create_state(state)
-            for sym in finiteAutomaton.symbols:
 
+            # loop to check all the transitions of that newstate
+            for sym in finiteAutomaton.symbols:
+                # current states is now the extracted state
                 evaluator.current_states = state
+                # evaluate it
                 evaluator.process_symbol(sym)
 
+                # if its the first iteration creates a dict
                 if newstate not in table.keys():
+                    # with newstate as key
                     table[newstate] = dict()
 
+                # if its an empty set
                 if len(evaluator.current_states) == 0:
-
+                    # its the empty state
                     process_state = empty_state
                     newstates.add(process_state)
                 else:
+                    # if not, create a new state
                     process_state = create_state(evaluator.current_states)
+
+                # and add new set of states (with only the new state)
                 table[newstate][sym] = set()
                 table[newstate][sym].add(process_state)
 
+                # if its not new
                 if process_state not in newstates:
+                    # add it to the set and the queue
                     newstates.add(process_state)
                     q.put(evaluator.current_states)
 
+        # create a new entry on dict for empty state
         table[empty_state] = dict()
+        # all symbols go to that same state
         for sym in finiteAutomaton.symbols:
             table[empty_state][sym] = set()
             table[empty_state][sym].add(empty_state)
@@ -87,7 +108,6 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         aut = FiniteAutomaton(initial, states=newstates,
                               symbols=finiteAutomaton.symbols, transitions=trans)
 
-        print(aut)
         return aut
 
     @staticmethod
