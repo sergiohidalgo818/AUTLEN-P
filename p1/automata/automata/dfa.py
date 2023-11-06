@@ -12,20 +12,30 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         """
         Returns an equivalent deterministic finite automaton.
         """
+        # function that creates a new state from a set of states
         def create_state(state_set: set) -> State:
+            # it creates a list from the set
             state_list = list(state_set)
+            # list comprehension to get list of state names
             state_name = [state.name for state in state_list]
+            # list comprehension to get list of finals
             state_final = [state.is_final for state in state_list]
+            # state name list shorted
             state_name.sort()
             namestate = ""
             final = False
+            # acces of the index of the list
             for i in range(len(state_list)):
-                namestate += "q"+state_name[i][1:]+", "
+                # the state name will be equivalent to all the name of the states
+                namestate += "q"+state_name[i][1:]+","
+                # if it the final state is among the states
                 if state_final[i]:
+                    # it will automatically became a true state
                     final = True
+            # slice to eliminate final comma
+            namestate = namestate[:-1]
 
-            namestate = namestate[:-2]
-
+            # return the new state
             return State(namestate, final)
 
         # To avoid circular imports
