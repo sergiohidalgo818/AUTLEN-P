@@ -87,7 +87,7 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         aut = FiniteAutomaton(initial, states=newstates,
                               symbols=finiteAutomaton.symbols, transitions=trans)
 
-
+        print(aut)
         return aut
 
     @staticmethod
