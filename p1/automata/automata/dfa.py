@@ -3,48 +3,80 @@ from automata.utils import is_deterministic
 from collections import deque
 import copy
 import queue
+
+
 class DeterministicFiniteAutomaton(FiniteAutomaton):
-        
+
     @staticmethod
-    def to_deterministic(finiteAutomaton:FiniteAutomaton):
+    def to_deterministic(finiteAutomaton: FiniteAutomaton):
         """
         Returns an equivalent deterministic finite automaton.
         """
-        
+        def create_state(state_set: set) -> State:
+            state_list = list(state_set)
+            state_name = [state.name for state in state_list]
+            state_final = [state.is_final for state in state_list]
+            state_name.sort()
+            namestate = ""
+            final = False
+            for i in range(len(state_list)):
+                namestate += "q"+state_name[i][1:]+", "
+                if state_final[i]:
+                    final = True
+
+            namestate = namestate[:-2]
+
+            return State(namestate, final)
+
         # To avoid circular imports
         from automata.automaton_evaluator import FiniteAutomatonEvaluator
         evaluator = FiniteAutomatonEvaluator(finiteAutomaton)
-        
-        initial = evaluator.current_states
-        table = dict()
 
+        initial = create_state(evaluator.current_states)
+        table = dict()
 
         q = queue.Queue()
         q.put(evaluator.current_states)
-        newstates=set()
-        newstates.add(evaluator.current_states)
+        newstates = set()
+        newstates.add(create_state(evaluator.current_states))
+
+        empty_state = State("empty", False)
 
         while not q.empty():
             state = q.get()
-            evaluator.current_states = state
+
+            newstate = create_state(state)
             for sym in finiteAutomaton.symbols:
+
+                evaluator.current_states = state
                 evaluator.process_symbol(sym)
 
-                if state not in table.keys():
-                    table[state] = dict()
-                
-                table[state][sym] = evaluator.current_states
-                
-                if evaluator.current_states not in newstates:
-                    newstates.add(evaluator.current_states)
+                if newstate not in table.keys():
+                    table[newstate] = dict()
+
+                if len(evaluator.current_states) == 0:
+
+                    process_state = empty_state
+                    newstates.add(process_state)
+                else:
+                    process_state = create_state(evaluator.current_states)
+                table[newstate][sym] = set()
+                table[newstate][sym].add(process_state)
+
+                if process_state not in newstates:
+                    newstates.add(process_state)
                     q.put(evaluator.current_states)
 
+        table[empty_state] = dict()
+        for sym in finiteAutomaton.symbols:
+            table[empty_state][sym] = set()
+            table[empty_state][sym].add(empty_state)
 
-        
-        
         trans = Transitions(table)
-        
-        aut = FiniteAutomaton(initial, newstates, finiteAutomaton.symbols, trans)
+
+        aut = FiniteAutomaton(initial, states=newstates,
+                              symbols=finiteAutomaton.symbols, transitions=trans)
+
 
         return aut
 
@@ -55,8 +87,8 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         Returns:
             Equivalent minimal automaton.
         """
-        #---------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # TO DO: Implement this method...
-        
-        #---------------------------------------------------------------------
+
+        # ---------------------------------------------------------------------
         raise NotImplementedError("This method must be implemented.")

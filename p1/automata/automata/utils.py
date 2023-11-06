@@ -217,7 +217,7 @@ def deterministic_automata_isomorphism(automaton1, automaton2):
 
         equiv_state = equiv_map.get(state1)
         if equiv_state:
-            if equiv_state is not state2:
+            if equiv_state != state2:
                 return None
 
         else:
