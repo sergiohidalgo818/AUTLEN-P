@@ -103,6 +103,7 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
             table[empty_state][sym] = set()
             table[empty_state][sym].add(empty_state)
 
+        # creates deterministic automaton
         trans = Transitions(table)
 
         aut = FiniteAutomaton(initial, states=newstates,
@@ -117,8 +118,53 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         Returns:
             Equivalent minimal automaton.
         """
-        # ---------------------------------------------------------------------
-        # TO DO: Implement this method...
 
-        # ---------------------------------------------------------------------
-        raise NotImplementedError("This method must be implemented.")
+
+        # To avoid circular imports
+        from automata.automaton_evaluator import FiniteAutomatonEvaluator
+        evaluator = FiniteAutomatonEvaluator(dfa)
+
+        q = queue.Queue()
+        q.put(evaluator.current_states)
+
+
+        # set of accesible states
+        accesible_states = set()
+        accesible_states.add(dfa.initial_state)
+
+        # while is not empty
+        while not q.empty():
+            # it will extract the next state on queue
+            state = q.get()
+
+            # loop to check all the transitions of that state
+            for sym in dfa.symbols:
+
+                # current states is now the extracted state
+                evaluator.current_states = state
+
+                # evaluate it
+                evaluator.process_symbol(sym)
+                
+                # if there are states on current_states
+                if len(evaluator.current_states) > 0:
+                    # flag to check if the current states have been added to queue
+                    flag_addqueue=False
+
+                    for next_state in evaluator.current_states:
+                        # if the next state has not been added
+                        if next_state not in accesible_states:
+                            
+                            if not flag_addqueue:
+                                # add current states if flag is false
+                                q.put(evaluator.current_states)
+                                flag_addqueue=True
+
+                            # add the next state to accesible states
+                            accesible_states.add(next_state)
+
+
+        # falta la parte 2 (clases de equivalencia)             
+
+
+        return dfa

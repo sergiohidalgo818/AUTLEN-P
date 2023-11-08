@@ -21,11 +21,8 @@ class FiniteAutomatonEvaluator():
         self.automaton = automaton
         
         current_states = {self.automaton.initial_state}
-        #---------------------------------------------------------------------
-        # TO DO: 
-        # add usefull code if necessary
-        #---------------------------------------------------------------------
-        
+
+
         self.current_states = self._complete_lambdas(current_states)
         
 
@@ -68,7 +65,7 @@ class FiniteAutomatonEvaluator():
 
             if new == prev:
                 break
-
+        
         return set_to_complete
         
             
