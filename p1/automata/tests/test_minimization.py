@@ -15,7 +15,8 @@ class TestMinimize(ABC, unittest.TestCase):
         equiv_map = deterministic_automata_isomorphism(minimized, simplified)
 
         self.assertTrue(equiv_map is not None)
-
+    
+    
     def test_empty_language(self):
         """Test an automaton for the empty language."""
         automaton_str = """
@@ -125,6 +126,68 @@ class TestMinimize(ABC, unittest.TestCase):
 
         self._check_minimize(automaton, simplified)
 
+    def test_minimization_presentation(self):
+        """Test the automaton from the minimization presentation."""
+        automaton_str = """
+        Automaton:
+            Symbols: 01
 
+            A
+            B
+            C final
+            D
+            E
+            F
+            G
+            H
+
+            ini A -0-> B
+            A -1-> F
+            B -0-> G
+            B -1-> C
+            C -0-> A
+            C -1-> C
+            D -0-> C
+            D -1-> G
+            E -0-> H
+            E -1-> F
+            F -0-> C
+            F -1-> G
+            G -0-> G
+            G -1-> E
+            H -0-> G
+            H -1-> C
+        """
+
+        automaton = AutomataFormat.read(automaton_str)
+
+        simplified_str = """
+        Automaton:
+            Symbols: 01
+
+            AE
+            BH
+            F
+            G
+            C final 
+
+            ini AE -0-> BH
+            AE -1-> F
+            BH -0-> G
+            BH -1-> C
+            F -0-> C
+            F -1-> G
+            G -0-> G
+            G -1-> AE
+            C -0-> AE
+            C -1-> C
+        """
+
+        simplified = AutomataFormat.read(simplified_str)
+
+        self._check_minimize(automaton, simplified)
+
+
+    
 if __name__ == '__main__':
     unittest.main()
