@@ -1,11 +1,43 @@
 from automata.automaton import State, Transitions, FiniteAutomaton
 from automata.utils import is_deterministic
 from collections import deque
+from functools import cmp_to_key
 import copy
 import queue
+import numpy
 
+def comparator(x, y):
+        '''
+        Compare 2 states 
+        '''
+        # gets the name in lowkeys
+        namex=x.name.lower()
+        namey=y.name.lower()
+
+        # empty is the first on the list
+        if namex=='empty':
+            return -1
+        elif namey=='empty':
+            return 1
+        
+        # initial is second
+        if namex=='initial':
+            return -1
+        elif namey=='initial':
+            return 1
+        
+        # qf or final should be the last one
+        if namex=='qf' or namex=='final':
+            return 1
+        elif namey =='qf' or namey=='final':
+            return -1
+        
+        # in any other case substract numbers
+        return int(namex[1:]) - int(namey[1:])
 
 class DeterministicFiniteAutomaton(FiniteAutomaton):
+    
+
 
     @staticmethod
     def to_deterministic(finiteAutomaton: FiniteAutomaton):
@@ -16,20 +48,17 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         def create_state(state_set: set) -> State:
             # it creates a list from the set
             state_list = list(state_set)
-            # list comprehension to get list of state names
-            state_name = [state.name for state in state_list]
-            # list comprehension to get list of finals
-            state_final = [state.is_final for state in state_list]
-            # state name list shorted
-            state_name.sort()
+      
+            # sort list with custom cmp
+            sortedlist = sorted(state_list, key=cmp_to_key(comparator))
+
             namestate = ""
             final = False
-            # acces of the index of the list
-            for i in range(len(state_list)):
+            for i in sortedlist:
                 # the state name will be equivalent to all the name of the states
-                namestate += "q"+state_name[i][1:]+","
+                namestate += "q"+i.name[1:]+","
                 # if it the final state is among the states
-                if state_final[i]:
+                if i.is_final:
                     # it will automatically became a true state
                     final = True
             # slice to eliminate final comma
@@ -163,8 +192,24 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
                             # add the next state to accesible states
                             accesible_states.add(next_state)
 
+        # sorted list of the states
+        accesible_list=sorted(list(accesible_states), key=cmp_to_key(comparator))
 
-        # falta la parte 2 (clases de equivalencia)             
+        # create an array for the equivalence
+        xtable = len(accesible_list)
+        class_table = numpy.ndarray(shape=(2, xtable))
+        
+        # first iteration
+        for i in range(xtable):
+            class_table[0][i] =int(accesible_list[i].is_final)
+            class_table[1][i] = None 
+        
+        class_table[1][0] =0
 
+        for i in range(1, xtable):
+            if class_table[1][i] != None:
+                if class_table[1][i] == class_table[1][0]:
+                    # en proceso
+                    pass
 
         return dfa
