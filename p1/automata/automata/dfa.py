@@ -76,7 +76,7 @@ def create_state(state_set: set) -> State:
     for i in sortedlist:
         # the state name will be equivalent to all the name of the states
         if qsnnumbers:
-            namestate += "q"+i.name[1:]+","
+            namestate += "q"+i.name[1:]
         else:
             namestate += i.name
 
@@ -85,13 +85,30 @@ def create_state(state_set: set) -> State:
             # it will automatically became a true state
             final = True
 
-    # slice to eliminate final comma
-    if qsnnumbers:
-        namestate = namestate[:-1]
-
     # return the new state
     return State(namestate, final)
 
+def get_empty_state(automaton: FiniteAutomaton) -> State:
+    '''
+    Gets the empty state (creats one if dont exist)
+    '''
+
+    empty = True
+    for state in automaton.states:
+        for symb in automaton.symbols:
+            trans = automaton.get_transition(state, symb)
+            if len(trans) > 0:
+                for s in trans:
+                    # check transitions from state
+                    if s != state:
+                        empty = False
+        # if its not final and all the transitions are to itself
+        if empty and not state.is_final:
+            # is the empty state
+            return state
+        empty = True
+    
+    return State("Empty", False)
 
 class DeterministicFiniteAutomaton(FiniteAutomaton):
 
@@ -118,7 +135,8 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
         newstates.add(initial)
 
         # empty state
-        empty_state = State("Empty", False)
+        empty_state = get_empty_state(finiteAutomaton)
+        empty_flag = False
 
         # while is not empty
         while not q.empty():
@@ -145,6 +163,7 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
                     # its the empty state
                     process_state = empty_state
                     newstates.add(process_state)
+                    empty_flag = True
                 else:
                     # if not, create a new state
                     process_state = create_state(evaluator.current_states)
@@ -158,13 +177,14 @@ class DeterministicFiniteAutomaton(FiniteAutomaton):
                     # add it to the set and the queue
                     newstates.add(process_state)
                     q.put(evaluator.current_states)
-
-        # create a new entry on dict for empty state
-        table[empty_state] = dict()
-        # all symbols go to that same state
-        for sym in finiteAutomaton.symbols:
-            table[empty_state][sym] = set()
-            table[empty_state][sym].add(empty_state)
+        
+        if empty_flag:
+            # create a new entry on dict for empty state
+            table[empty_state] = dict()
+            # all symbols go to that same state
+            for sym in finiteAutomaton.symbols:
+                table[empty_state][sym] = set()
+                table[empty_state][sym].add(empty_state)
 
         # creates deterministic automaton
         trans = Transitions(table)

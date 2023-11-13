@@ -1,0 +1,364 @@
+Test empty lenguage:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  Initial[shape=circle]
+  NotReached1[shape=circle]
+  NotReached2[shape=circle]
+  Empty[shape=circle]
+
+  __start_point__ -> Initial
+  Initial -> Empty[label="a"]
+  NotReached1 -> NotReached2[label="a"]
+  NotReached2 -> Empty[label="a"]
+  Empty -> Empty[label="a"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  InitialEmpty[shape=circle]
+
+  __start_point__ -> InitialEmpty
+  InitialEmpty -> InitialEmpty[label="a"]
+}
+
+
+Test empty str:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  Initial[shape=doublecircle]
+  NotReached1[shape=circle]
+  NotReached2[shape=circle]
+  Empty[shape=circle]
+
+  __start_point__ -> Initial
+  Initial -> Empty[label="a"]
+  NotReached1 -> NotReached2[label="a"]
+  NotReached2 -> Empty[label="a"]
+  Empty -> Empty[label="a"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  Initial[shape=doublecircle]
+  Empty[shape=circle]
+
+  __start_point__ -> Initial
+  Initial -> Empty[label="a"]
+  Empty -> Empty[label="a"]
+}
+
+
+Test from example sheet:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q0[shape=doublecircle]
+  q1[shape=circle]
+  q2[shape=doublecircle]
+  q3[shape=circle]
+  q4[shape=doublecircle]
+  q5[shape=circle]
+
+  __start_point__ -> q0
+  q0 -> q1[label="0"]
+  q0 -> q1[label="1"]
+  q1 -> q2[label="0"]
+  q1 -> q2[label="1"]
+  q2 -> q3[label="0"]
+  q2 -> q3[label="1"]
+  q3 -> q4[label="0"]
+  q3 -> q4[label="1"]
+  q4 -> q5[label="0"]
+  q4 -> q5[label="1"]
+  q5 -> q0[label="0"]
+  q5 -> q0[label="1"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q1q3q5[shape=circle]
+  q0q2q4[shape=doublecircle]
+
+  __start_point__ -> q0q2q4
+  q0q2q4 -> q1q3q5[label="0"]
+  q0q2q4 -> q1q3q5[label="1"]
+  q1q3q5 -> q0q2q4[label="0"]
+  q1q3q5 -> q0q2q4[label="1"]
+}
+
+
+Test from example sheet2:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q0[shape=circle]
+  q1[shape=doublecircle]
+  q2[shape=circle]
+  q3[shape=doublecircle]
+  q4[shape=circle]
+
+  __start_point__ -> q0
+  q0 -> q1[label="a"]
+  q0 -> q3[label="b"]
+  q1 -> q2[label="a"]
+  q1 -> q1[label="b"]
+  q2 -> q1[label="a"]
+  q2 -> q2[label="b"]
+  q3 -> q4[label="a"]
+  q3 -> q3[label="b"]
+  q4 -> q3[label="a"]
+  q4 -> q4[label="b"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  q2q4[shape=circle]
+  q0[shape=circle]
+  q1q3[shape=doublecircle]
+
+  __start_point__ -> q0
+  q0 -> q1q3[label="a"]
+  q0 -> q1q3[label="b"]
+  q1q3 -> q2q4[label="a"]
+  q1q3 -> q1q3[label="b"]
+  q2q4 -> q1q3[label="a"]
+  q2q4 -> q2q4[label="b"]
+}
+
+
+Test from example sheet3:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  A[shape=doublecircle]
+  B[shape=doublecircle]
+  C[shape=doublecircle]
+  D[shape=doublecircle]
+  E[shape=circle]
+
+  __start_point__ -> A
+  A -> B[label="a"]
+  A -> B[label="c"]
+  A -> C[label="b"]
+  B -> B[label="a"]
+  B -> B[label="c"]
+  B -> C[label="b"]
+  C -> B[label="a"]
+  C -> B[label="c"]
+  C -> D[label="b"]
+  D -> E[label="a"]
+  D -> E[label="b"]
+  D -> E[label="c"]
+  E -> E[label="a"]
+  E -> E[label="b"]
+  E -> E[label="c"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  D[shape=doublecircle]
+  E[shape=circle]
+  AB[shape=doublecircle]
+  C[shape=doublecircle]
+
+  __start_point__ -> AB
+  AB -> AB[label="a"]
+  AB -> C[label="b"]
+  AB -> AB[label="c"]
+  C -> AB[label="a"]
+  C -> D[label="b"]
+  C -> AB[label="c"]
+  D -> E[label="a"]
+  D -> E[label="b"]
+  D -> E[label="c"]
+  E -> E[label="a"]
+  E -> E[label="b"]
+  E -> E[label="c"]
+}
+
+
+Test from presentation:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  A[shape=circle]
+  B[shape=circle]
+  C[shape=doublecircle]
+  D[shape=circle]
+  E[shape=circle]
+  F[shape=circle]
+  G[shape=circle]
+  H[shape=circle]
+
+  __start_point__ -> A
+  A -> B[label="0"]
+  A -> F[label="1"]
+  B -> G[label="0"]
+  B -> C[label="1"]
+  C -> A[label="0"]
+  C -> C[label="1"]
+  D -> C[label="0"]
+  D -> G[label="1"]
+  E -> H[label="0"]
+  E -> F[label="1"]
+  F -> C[label="0"]
+  F -> G[label="1"]
+  G -> G[label="0"]
+  G -> E[label="1"]
+  H -> G[label="0"]
+  H -> C[label="1"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  AE[shape=circle]
+  G[shape=circle]
+  F[shape=circle]
+  BH[shape=circle]
+  C[shape=doublecircle]
+
+  __start_point__ -> AE
+  AE -> BH[label="0"]
+  AE -> F[label="1"]
+  BH -> G[label="0"]
+  BH -> C[label="1"]
+  C -> AE[label="0"]
+  C -> C[label="1"]
+  F -> C[label="0"]
+  F -> G[label="1"]
+  G -> G[label="0"]
+  G -> AE[label="1"]
+}
+
+
+Test from presentation2:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  A[shape=circle]
+  B[shape=doublecircle]
+  C[shape=doublecircle]
+  D[shape=circle]
+  E[shape=circle]
+  F[shape=doublecircle]
+
+  __start_point__ -> A
+  A -> B[label="0"]
+  A -> C[label="1"]
+  B -> D[label="0"]
+  B -> E[label="1"]
+  C -> E[label="0"]
+  C -> D[label="1"]
+  D -> F[label="0"]
+  D -> F[label="1"]
+  E -> F[label="0"]
+  E -> F[label="1"]
+  F -> F[label="0"]
+  F -> F[label="1"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  BC[shape=doublecircle]
+  DE[shape=circle]
+  A[shape=circle]
+  F[shape=doublecircle]
+
+  __start_point__ -> A
+  A -> BC[label="0"]
+  A -> BC[label="1"]
+  BC -> DE[label="0"]
+  BC -> DE[label="1"]
+  DE -> F[label="0"]
+  DE -> F[label="1"]
+  F -> F[label="0"]
+  F -> F[label="1"]
+}
+
+
+Test redundant states:
+
+Recived:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  Initial[shape=circle]
+  B1[shape=doublecircle]
+  B2[shape=doublecircle]
+  Empty[shape=circle]
+
+  __start_point__ -> Initial
+  Initial -> B1[label="a"]
+  Initial -> Empty[label="b"]
+  B1 -> B1[label="a"]
+  B1 -> B2[label="b"]
+  B2 -> B1[label="a"]
+  B2 -> B1[label="b"]
+  Empty -> Empty[label="a"]
+  Empty -> Empty[label="b"]
+}
+
+Processed:
+digraph {
+  rankdir=LR;
+
+  node [shape = point]; __start_point__
+  B1B2[shape=doublecircle]
+  Initial[shape=circle]
+  Empty[shape=circle]
+
+  __start_point__ -> Initial
+  Initial -> B1B2[label="a"]
+  Initial -> Empty[label="b"]
+  B1B2 -> B1B2[label="a"]
+  B1B2 -> B1B2[label="b"]
+  Empty -> Empty[label="a"]
+  Empty -> Empty[label="b"]
+}
+
+
