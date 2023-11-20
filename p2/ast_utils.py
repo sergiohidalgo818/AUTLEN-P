@@ -50,9 +50,9 @@ class ASTDotVisitor (NodeVisitor):
     digraph : str
     state_count : int
     # states are stored as (label, shape)
-    states : list[tuple]
+    states : list
     # transitions are stored as [transition_label]:(state, state)
-    transitions : dict[tuple]
+    transitions : list[tuple]
 
     def __init__(self) -> None:
         self.digraph = '''digraph {\n'''
@@ -60,13 +60,23 @@ class ASTDotVisitor (NodeVisitor):
         self.states = list()
         self.transitions = dict()
     
+    def create_diagraph(self)-> str:
+        for i in self.states:
+            self.digraph += "s"+str(self.state_count)+'[label="'+i+", shape=box]\n"
+            self.state_count+=1 
+
+        return self.digraph+ '''}'''
+    
     def generic_visit(self, node):
         '''
         Generic visit of the code
         '''
-        print(node.__class__.__name__)
-        self.states= ("s"+self.state_count, node.__class__.__name__+"()")
-        self.digraph += "s"+self.state_count+"[label="+node.__class__.__name__+"()"+", "
+
+
+        self.states.append("s"+str(self.state_count)+'[label="'+node.__class__.__name__+'(')
+        self.state_count+=1 
+
+        extras = ""
         for field, value in iter_fields(node):
             if isinstance(value, list):
                 for item in value:
@@ -75,7 +85,9 @@ class ASTDotVisitor (NodeVisitor):
                         self.visit(item)
                     elif isinstance(value, AST):
                         self.visit(value)
-        
 
-        return self.digraph + '''}'''
+        self.states.reverse()
+        self.digraph+= self.states.pop() +extras +')", shape=box]\n'
+
+        return self.digraph+ '''}'''
     
