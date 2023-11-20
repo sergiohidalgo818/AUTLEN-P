@@ -1,5 +1,6 @@
 from ast import NodeVisitor
-from ast import iter_fields, AST, If
+from ast import iter_fields, AST, If, arguments
+from queue import Queue
 
 class ASTNestedIfCounter(NodeVisitor):
 
@@ -50,14 +51,14 @@ class ASTDotVisitor (NodeVisitor):
     digraph : str
     state_count : int
     # states are stored as (label, shape)
-    states : list
+    states : Queue
     # transitions are stored as [transition_label]:(state, state)
     transitions : list[tuple]
 
     def __init__(self) -> None:
         self.digraph = '''digraph {\n'''
         self.state_count = 0
-        self.states = list()
+        self.states = Queue()
         self.transitions = dict()
     
     def create_diagraph(self)-> str:
@@ -71,23 +72,28 @@ class ASTDotVisitor (NodeVisitor):
         '''
         Generic visit of the code
         '''
+        print("")
+        print(node)
 
-
-        self.states.append("s"+str(self.state_count)+'[label="'+node.__class__.__name__+'(')
+        self.states.put("s"+str(self.state_count)+'[label="'+node.__class__.__name__+'(')
         self.state_count+=1 
-
+        transition = ""
         extras = ""
+        
         for field, value in iter_fields(node):
-            if isinstance(value, list):
+            print(field, value)
+            if not isinstance(value, list):
+                extras+= field+"='"+str(value)+"', "
+            
+            else:
                 for item in value:
                     self.if_visited = False
                     if isinstance(item, AST):
                         self.visit(item)
                     elif isinstance(value, AST):
                         self.visit(value)
-
-        self.states.reverse()
-        self.digraph+= self.states.pop() +extras +')", shape=box]\n'
+        extras = extras[:-2]
+        self.digraph+= self.states.get() +extras +')", shape=box]\n'
 
         return self.digraph+ '''}'''
     
