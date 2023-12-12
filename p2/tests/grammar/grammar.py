@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import deque
-from typing import AbstractSet, Collection, MutableSet, Optional, Dict, List, Optional
+from typing import AbstractSet, Collection, MutableSet, Optional, Dict, List, Optional, Set
+from copy import deepcopy
 
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
@@ -73,6 +74,59 @@ class Grammar:
             f"axiom={self.axiom!r}, "
             f"productions={self.productions!r})"
         )
+        
+    def firsts(self) -> Dict[str, Set[str]]:
+        """
+        Method to compute the firsts of each non-terminal.
+
+        Args:
+            None
+
+        Returns:
+            A dictionary with the Firsts for each non-terminal.
+        """
+        
+        #Initialize previous and current dictionary with different values so it enters the while loop
+        previous_dict: Dict[str, Set[str]] = {nt: set("1") for nt in self.non_terminals}
+        current_dict: Dict[str, Set[str]] = {nt: set() for nt in self.non_terminals}
+        
+        #We iterate until nothing changes in the dictionaries between iterations
+        while previous_dict != current_dict:
+            #Copy current dictionary to the previous one with each iteration
+            previous_dict = deepcopy(current_dict)
+
+            for nt in self.non_terminals:
+
+                for string in self.productions.get(nt):
+                    #For each production we check if lambda is the result and add it to the corresponding non-terminal first set
+                    if string == "":
+                        current_dict.get(nt).add(string)
+                    #If it isn't lambda then we look at the resulting string
+                    else:
+                        brk = 0
+
+                        for ch in string:
+                            #If the next character is terminal then we add it to the corresponding non-terminal set and end the iteration
+                            if ch in self.terminals:
+                                current_dict.get(nt).add(str(string[0]))
+                                brk = 1
+                                break
+
+                            firsts = previous_dict.get(str(ch))
+                            #If the next character is non-terminal and has no lambda in its first set then we add its set to the corresponding non-terminal set and end the iteration
+                            if "" not in firsts:
+                                current_dict.get(nt).update(firsts)
+                                brk = 1
+                                break
+                            #Otherwise we add the non-terminal first set to the corresponding one and keep iterating
+                            firsts.remove("")
+                            current_dict.get(nt).update(firsts)
+                            
+                        #After the loop we check if the whole string was processed and add lambda to the corresponding first set if yes
+                        if brk == 0:
+                            current_dict.get(nt).add("")
+                            
+        return previous_dict
 
 
     def compute_first(self, sentence: str) -> AbstractSet[str]:
@@ -85,8 +139,84 @@ class Grammar:
         Returns:
             First set of str.
         """
+        
+        #If the recieved string is empty then its first set will only contain lambda
+        if sentence == "":
+            firsts = set()
+            firsts.add("")
+            return firsts
+        
+        #If the recieved string has any character not included in the accepting language then raises a ValueError Exception
+        for ch in sentence:
+            if ch not in self.terminals and ch not in self.non_terminals:
+                raise ValueError(
+                    "La cadena contiene algún caracter no incluído en los terminales ni no terminales"
+                )
+            
+        """previous_dict: Dict[str, Set[str]] = {nt: set("1") for nt in self.non_terminals}
+        current_dict: Dict[str, Set[str]] = {nt: set() for nt in self.non_terminals}
 
-	# TO-DO: Complete this method for exercise 3...
+        while previous_dict != current_dict:
+            previous_dict = deepcopy(current_dict)
+
+            for nt in self.non_terminals:
+
+                for string in self.productions.get(nt):
+
+                    if string == "":
+                        current_dict.get(nt).add(string)
+                    else:
+                        brk = 0
+
+                        for ch in string:
+                            if ch in self.terminals:
+                                current_dict.get(nt).add(str(string[0]))
+                                brk = 1
+                                break
+
+                            firsts = previous_dict.get(str(ch))
+                            if "" not in firsts:
+                                current_dict.get(nt).update(firsts)
+                                brk = 1
+                                break
+                            firsts.remove("")
+                            current_dict.get(nt).update(firsts)
+
+                        if brk == 0:
+                            current_dict.get(nt).add("")"""
+        
+        #Initialize the set and get the first set for each non-terminal
+        first_set = set()
+        brk = 0
+        firsts = self.firsts()
+        
+        #Process the recieved string
+        for ch in sentence:
+            #If a character is a terminal we add it to the set and discard the rest of the string
+            if ch in self.terminals:
+                first_set.add(ch)
+                brk = 1
+                break
+            
+            #If a character is a non-terminal with no lambda in its first set then we add its first set to the set and discard the rest of the string
+            #firsts = previous_dict.get(str(ch))
+            if "" not in firsts.get(str(ch)):
+                first_set.update(firsts.get(str(ch)))
+                brk = 1
+                break
+            
+            #Otherwise we add the non-terminal first set to the set and keep iterating 
+            first_set.update(firsts.get(str(ch)))
+            
+        #If we didn't complete the iteration of the string then we remove lambda from the set
+        if brk == 1:
+            if "" in first_set:
+                first_set.remove("")
+
+        return first_set
+        
+
+	# TO-DO: Complete this method for exercise 3... (check)
 
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
@@ -100,7 +230,67 @@ class Grammar:
             Follow set of symbol.
         """
 
-	# TO-DO: Complete this method for exercise 4...
+        #If the recieved string is empty then return an empty set
+        if symbol == "":
+            return set()
+        
+        #If the recieved string is a character not included in the accepting language then raises a ValueError Exception
+        if symbol not in self.terminals and symbol not in self.non_terminals:
+            raise ValueError(
+                "La cadena contiene algún caracter no incluído en los terminales ni no terminales"
+            )
+        
+        #We get a dictionary with the Firsts for each non-terminal
+        firsts = self.firsts()
+        
+        #Initialize previous and current dictionary with different values so it enters the while loop
+        previous_dict: Dict[str, Set[str]] = {nt: set("1") for nt in self.non_terminals}
+        current_dict: Dict[str, Set[str]] = {nt: set() for nt in self.non_terminals}
+
+        #We iterate until nothing changes in the dictionaries between iterations
+        while previous_dict != current_dict:
+            #Copy current dictionary to the previous one with each iteration
+            previous_dict = deepcopy(current_dict)
+
+            for nt in self.non_terminals:
+                #If a non-terminal is the axiom then we add "$" to its follow set
+                if nt is self.axiom:
+                    current_dict.get(nt).add("$")
+
+                for string in self.productions.get(nt):
+                    #For each production we check if lambda is the result and continue if so
+                    if string == "":
+                        continue
+                    else:
+                        aux = ""
+                        #Otherwise we iterate the resulting string backwards while keeping in aux the last character processed
+                        for ch in reversed(string):
+                            #If the character being processed is non-terminal and it's the last one in the string then we add to its follow set the set from the non-terminal being processed 
+                            if ch in self.non_terminals and aux == "":
+                                current_dict.get(ch).update(previous_dict.get(nt))
+                                aux = ch
+                            
+                            #If it's non-terminal and it's followed by a non-terminal then we add the second one's set to the first one's
+                            elif ch in self.non_terminals and aux in self.non_terminals:
+                                aux_firsts = deepcopy(firsts.get(aux))
+                                if "" in aux_firsts:
+                                    aux_firsts.remove("")
+                                    current_dict.get(ch).update(previous_dict.get(aux))
+                                current_dict.get(ch).update(aux_firsts)
+                                aux = ch
+                            
+                            #If it's noon-terminal and is followed by a terminal then we add this terminal to its follow set
+                            elif ch in self.non_terminals:
+                                current_dict.get(ch).add(aux)
+                                aux = ch
+                            
+                            #If it's terminal we just keep it and continue iterating
+                            else:
+                                aux = ch
+
+        return previous_dict.get(symbol)
+
+	# TO-DO: Complete this method for exercise 4... (check)
 
 
     def get_ll1_table(self) -> Optional[LL1Table]:
