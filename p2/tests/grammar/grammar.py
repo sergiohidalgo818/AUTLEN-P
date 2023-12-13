@@ -98,6 +98,7 @@ class Grammar:
             for nt in self.non_terminals:
 
                 for string in self.productions.get(nt):
+                    
                     #For each production we check if lambda is the result and add it to the corresponding non-terminal first set
                     if string == "":
                         current_dict.get(nt).add(string)
@@ -112,7 +113,7 @@ class Grammar:
                                 brk = 1
                                 break
 
-                            firsts = previous_dict.get(str(ch))
+                            firsts = deepcopy(previous_dict.get(str(ch)))
                             #If the next character is non-terminal and has no lambda in its first set then we add its set to the corresponding non-terminal set and end the iteration
                             if "" not in firsts:
                                 current_dict.get(nt).update(firsts)
