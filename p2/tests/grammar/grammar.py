@@ -308,18 +308,18 @@ class Grammar:
         for non_terminal, symbols_nt in self.productions.items():
             # iterate all the symbols in the rule of the non terminal symbol
             for symbol in symbols_nt:
-                    # get the first terminals symbols
-                    first_terminals = self.compute_first(symbol)
+                # get the first terminals symbols
+                first_terminals = self.compute_first(symbol)
+                # add cells to the table
+                for terminal in first_terminals - {""}:
+                    table.add_cell(non_terminal, terminal, symbol)
+                # if there is a lambda on the first set
+                if "" in first_terminals:
+                    # get the follow terminal symbols 
+                    follow_terminals = self.compute_follow(non_terminal)
                     # add cells to the table
-                    for terminal in first_terminals - {""}:
+                    for terminal in follow_terminals:
                         table.add_cell(non_terminal, terminal, symbol)
-                    # if there is a lambda on the first set
-                    if "" in first_terminals:
-                        # get the follow terminal symbols 
-                        follow_terminals = self.compute_follow(non_terminal)
-                        # add cells to the table
-                        for terminal in follow_terminals:
-                            table.add_cell(non_terminal, terminal, symbol)
 
         return table
 
