@@ -109,7 +109,7 @@ class Grammar:
                         for ch in string:
                             #If the next character is terminal then we add it to the corresponding non-terminal set and end the iteration
                             if ch in self.terminals:
-                                current_dict.get(nt).add(str(string[0]))
+                                current_dict.get(nt).add(str(ch))
                                 brk = 1
                                 break
 
