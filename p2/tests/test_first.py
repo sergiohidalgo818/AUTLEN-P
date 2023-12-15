@@ -59,6 +59,7 @@ class TestFirst(unittest.TestCase):
         grammar = GrammarFormat.read(grammar_str)
         self._check_first(grammar, "A", {'', 'a'})
         self._check_first(grammar, "D", {'', '*'})
+        self._check_first(grammar, "Y", {'*'})
         self._check_first(grammar, "I", {'', 'a', '*'})
         self._check_first(grammar, "X", {'a', '*'})
         self._check_first(grammar, "", {''})
@@ -79,7 +80,7 @@ class TestFirst(unittest.TestCase):
         self._check_first(grammar, "A", {'1', '0', '<'})
         self._check_first(grammar, "B", {'', '<'})
         self._check_first(grammar, "C", {'1', '0'})
-        self._check_first(grammar, "D", {'$'})
+        self._check_first(grammar, "D", {'1', '0'})
 
 if __name__ == '__main__':
     unittest.main()
