@@ -302,7 +302,34 @@ class Grammar:
             LL(1) table for the grammar, or None if the grammar is not LL(1).
         """
 
-	# TO-DO: Complete this method for exercise 5...
+        non_terminals = self.non_terminals
+        terminals = self.terminals
+
+        ll1_table = LL1Table(non_terminals, terminals)
+
+
+        for non_terminal in non_terminals:
+            for production in self.productions[non_terminal]:
+                first_set = self.compute_first(production)
+                for terminal in first_set:
+                    if terminal != '':
+                        try:
+                            ll1_table.add_cell(non_terminal, terminal, production)
+                        except RepeatedCellError:
+                            return None
+
+                if '' in first_set:
+                    follow_set = self.compute_follow(non_terminal)
+                    for terminal in follow_set:
+                        try:
+                            ll1_table.add_cell(non_terminal, terminal, production)
+                        except RepeatedCellError:
+                            return None
+
+        return ll1_table
+
+
+	# TO-DO: Complete this method for exercise 5... (check)
 
 
     def is_ll1(self) -> bool:

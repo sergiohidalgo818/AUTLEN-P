@@ -33,11 +33,11 @@ def main() -> None:
     print("fun2: maximum number of nested if:", counter.visit(my_ast))
     # Should print 3
 
-
+    print("")
     dot_visitor = ASTDotVisitor()
     source = inspect.getsource(print_if_pos)
     my_ast = ast.parse(source)
-    print(dot_visitor.visit(my_ast))
+    dot_visitor.visit(my_ast)
 
 
 
